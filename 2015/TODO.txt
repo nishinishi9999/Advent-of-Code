@@ -1,0 +1,5 @@
+TODO
+
+Day 8 second part
+Day 18 solution improvement (has to be uncommented)
+Day 20 get_divisor function, sometimes divisors are repeated
