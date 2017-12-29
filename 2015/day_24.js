@@ -2,13 +2,17 @@
 * Advent of code 2015 - Day 24
 *******************************/
 var fs = require('fs');
-var jsonfile = require('jsonfile');
 
 
-var input = fs.readFileSync('./input/day_24.txt', 'utf8').split('\r\n').map( (n) => parseInt(n) );
+var input = fs.readFileSync('./input/day_24.txt', 'utf8').split('\r\n')
+    .map( (n) => parseInt(n) );
 
-const TOTAL = sum(input);
-const THIRD = TOTAL / 3;
+
+var TOTAL   = sum(input);
+var THIRD   = TOTAL / 3;
+var QUARTER = TOTAL / 4;
+var RES_ENTANGLEMENT = Infinity;
+
 
 function sum(arr)
     {
@@ -24,86 +28,67 @@ function sum(arr)
         return res;
     }
 
-function divide(input, division)
+/*************************************
+* n     : Target iteration
+* i     : Current iteration
+* prev_j: Previous index
+* total : Sum total up to now
+* Part  : Weight of the first group
+*************************************/
+function find_group_1(n, i, prev_j, total, ent, weight)
     {
-        if( sum(input) == sum(division[0]) )
+        var temp;
+        var ret = false;
+        
+        if(n == i)
             {
-                //
-            }
-        
-        for(var i = 0; i < input.length; i++)
-            {
-                if(input[i] == false) { continue; }
-            }
-    }
-
-var division = [ [], [] ];
-//divide(input, division);
-
-
-var LEN    = input.length;
-var bin    = '';
-var pad    = '0'.repeat(LEN);
-
-var target = '1'.repeat(LEN);
-
-var first  = 0;
-var pos    = [];
-var res    = [];
-
-/**
-FIRST_N:
-for(var i = 1; bin != target; i++)
-    {
-        first = 0;
-        
-        bin = i.toString(2);
-        bin = pad.substr(bin.length) + bin;
-        
-        for(var j = 0; j < LEN; j++)
-            {
-                if(bin[j] == '1') { first += input[j]; }
-                
-                if(first > THIRD) { continue FIRST_N; }
-            }
-        
-        if(i % 1000000 == 0) { console.log('FIRST', bin, i, first); }
-        if(first == THIRD) { pos.push(bin); }
-    }
-**/
-
-pos = jsonfile.readFileSync('./pos.json');
-
-var a, b, i, j, k;
-var bin1, bin2;
-var third;
-
-FIRST_POS:
-for(a = 0; a < pos.length; a++)
-    {
-        bin1 = pos[a];
-        
-        SECOND_POS:
-        for(b = a+1; b < pos.length; b++)
-            {
-                bin2 = pos[b];
-                
-                for(i = 0; i <= LEN; i++)
+                if(total == weight && sum(input) == (TOTAL-weight))
                     {
-                        if(bin1[i] == '1' && bin2[i] == '1') { continue SECOND_POS; }
-                    }
-
-                third = '';
-                for(i = 0; i <= LEN; i++)
-                    {
-                        third += bin1[i] == '0' && bin2[i] == '0' ? '1' : '0';
+                        RES_ENTANGLEMENT = ent;
                         
+                        return true;
                     }
-                //console.log(third);
+                else
+                    {
+                        return false;
+                    }
             }
         
-        console.log(a);
+        for(var j = prev_j+1; j < input.length; j++)
+            {
+                if(input[j] == false) { continue; }
+                
+                temp = input[j];
+                
+                if(total + temp <= weight && ent*temp < RES_ENTANGLEMENT)
+                    {
+                        input[j] = false;
+                        
+                        ret = find_group_1( n, i+1, j, total+temp, ent*temp, weight ) || ret;
+                        
+                        input[j] = temp;
+                    }
+            }
+        
+        
+        return ret;
     }
 
 
-console.log(res);
+for(var i = 1; i < input.length; i++)
+    {
+        var ret = find_group_1(i, 0, -1, 0, 1, THIRD);
+        if(ret) { break; }
+    }
+        
+console.log(RES_ENTANGLEMENT);
+RES_ENTANGLEMENT = Infinity;
+
+
+for(var i = 1; i < input.length; i++)
+    {
+        var ret = find_group_1(i, 0, -1, 0, 1, QUARTER);
+        if(ret) { break; }
+    }
+
+console.log(RES_ENTANGLEMENT);

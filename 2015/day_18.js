@@ -18,7 +18,8 @@ function n_neighbors(y, x)
                 for(var j = -1; j < 2; j++)
                     {
                         if(
-                            input[y+i] != undefined && input[y+i][x+j]
+                            input[y+i] != undefined
+                            && input[y+i][x+j]
                             && input[y+i][x+j] == '#'
                             && !(i == 0 && j == 0)
                           )

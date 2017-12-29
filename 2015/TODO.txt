@@ -1,5 +1,9 @@
 TODO
 
 Day 8 second part
-Day 18 solution improvement (has to be uncommented)
+Day 18 solution improvement (has to be uncommented), input condition on if is repeated, is second part solved?
 Day 20 get_divisor function, sometimes divisors are repeated
+Day 19
+Day 21
+Day 22
+Day 25
