@@ -1,0 +1,17 @@
+{
+  "name": "advent_of_code_2017",
+  "version": "1.0.0",
+  "description": "Advent of Code 2017",
+  "main": "day_1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "lint": "tslint -p . -c rules/tslint.json --force"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/mathjs": "0.0.39",
+    "mathjs": "^4.0.1"
+  }
+}
