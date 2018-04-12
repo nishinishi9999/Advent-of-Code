@@ -1,0 +1,11 @@
+{
+  "name": "advent_of_code_2015",
+  "version": "1.0.0",
+  "description": "Advent of Code 2015",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
