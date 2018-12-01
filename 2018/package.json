@@ -1,0 +1,17 @@
+{
+  "name": "advent-of-code-2018",
+  "version": "1.0.0",
+  "description": "Advent of Code 2018",
+  "main": "index.js",
+  "dependencies": {
+    "@types/node": "^10.12.11"
+  },
+  "devDependencies": {
+    "ramda": "^0.26.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "GPL-3.0"
+}

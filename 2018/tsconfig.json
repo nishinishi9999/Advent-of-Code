@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "lib": [
+      "es7"
+    ],
+    "newLine": "lf",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "rootDir": "ts/",
+    "outDir": "js/",
+    "strict": true,
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "target": "es6"
+  },
+  "include": [
+    "ts/",
+    "typings\\**\\*.d.ts",
+    "node_modules\\@*\\types-*\\*.d.ts"
+  ]
+}
