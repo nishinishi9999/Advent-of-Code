@@ -28,7 +28,7 @@ function second(xs, acc) {
         return second(xs, _acc);
 }
 function main() {
-    const path = '../input/day_1.txt';
+    const path = 'input/day_1.txt';
     const input = Util.format_as_numbers(Util.read_file(path));
     const def_acc = {
         found: false,

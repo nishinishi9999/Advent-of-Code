@@ -35,7 +35,7 @@ function second(xs :number[], acc :Repeated) :number {
 }
 
 function main() :void {
-  const path  = '../input/day_1.txt';
+  const path  = 'input/day_1.txt';
   const input = Util.format_as_numbers( Util.read_file(path) );
 
   const def_acc = {
