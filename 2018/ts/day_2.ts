@@ -24,7 +24,7 @@ function are_correct(n :number) :boolean {
 }
 
 function diff(a :string, b :string) :number {
-  return a.split('').map( (_, i) => a[i] !== b[i] ? 1 : 0 ).reduce( (acc, n) => acc+n );
+  return a.split('').map( (_, i) => <number>(a[i] !== b[i] ? 1 : 0) ).reduce( (acc, n) => acc+n );
 }
 
 function common_letters(a :string, b :string) :string {

@@ -5,7 +5,10 @@ export interface NumberJSON {
   [propName :string] :number
 }
 
-// IO
+export interface NumberArrJSON {
+  [propName :string] :number[]
+}
+
 export const read_file = (path :string) :string => fs.readFileSync(path, 'utf8');
 
 export const format_as_strings = (file :string) :string[] => file.split('\n')

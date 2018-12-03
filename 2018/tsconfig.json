@@ -2,7 +2,7 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "lib": [
-      "es7"
+      "es2017"
     ],
     "newLine": "lf",
     "module": "commonjs",

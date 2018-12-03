@@ -26,7 +26,7 @@ function are_correct(n) {
     return n === 1;
 }
 function diff(a, b) {
-    return a.split('').map((_, i) => a[i] !== b[i] ? 2 : 0).reduce((acc, n) => acc + n, 0);
+    return a.split('').map((_, i) => (a[i] !== b[i] ? 1 : 0)).reduce((acc, n) => acc + n);
 }
 function common_letters(a, b) {
     return a.split('').filter((_, i) => a[i] === b[i]).join('');

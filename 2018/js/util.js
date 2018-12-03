@@ -8,7 +8,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
-// IO
 exports.read_file = (path) => fs.readFileSync(path, 'utf8');
 exports.format_as_strings = (file) => file.split('\n')
     .filter(_ => _);
