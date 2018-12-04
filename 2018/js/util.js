@@ -18,3 +18,15 @@ exports.inc_key = (json, key) => {
     const _key = key.toString();
     return { [_key]: json[_key] ? json[_key] + 1 : 1 };
 };
+function obj_max(obj) {
+    return Object.keys(obj).sort((a, b) => obj[b] - obj[a])[0];
+}
+exports.obj_max = obj_max;
+function obj_min(obj) {
+    return Object.keys(obj).sort((a, b) => obj[a] - obj[b])[0];
+}
+exports.obj_min = obj_min;
+function obj_find_key(obj, val) {
+    return Object.keys(obj).find(key => obj[key] === val);
+}
+exports.obj_find_key = obj_find_key;

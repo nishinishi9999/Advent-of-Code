@@ -23,3 +23,16 @@ export const inc_key = (json :NumberJSON, key :number) => {
   return { [_key]: json[_key] ? json[_key]+1 : 1 }
 }
 
+export function obj_max(obj) {
+  return Object.keys(obj).sort( (a, b) => obj[b] - obj[a] )[0];
+}
+
+export function obj_min(obj) {
+  return Object.keys(obj).sort( (a, b) => obj[a] - obj[b] )[0];
+}
+
+export function obj_find_key(obj, val) {
+  return Object.keys(obj).find( key => obj[key] === val );
+}
+
+
