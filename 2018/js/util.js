@@ -18,6 +18,10 @@ exports.inc_key = (json, key) => {
     const _key = key.toString();
     return { [_key]: json[_key] ? json[_key] + 1 : 1 };
 };
+function obj_sum(obj) {
+    return Object.values(obj).reduce((acc, n) => acc + n);
+}
+exports.obj_sum = obj_sum;
 function obj_max(obj) {
     return Object.keys(obj).sort((a, b) => obj[b] - obj[a])[0];
 }

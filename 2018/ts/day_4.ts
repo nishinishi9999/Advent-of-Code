@@ -68,15 +68,16 @@ function fill_timetable(timestamps :Timestamp[]) :TimeTable {
     const [date, min] = get_date_min(t);
     
     if( t.action == 'begin' ) {
-      table[date] = Array(60).fill(0).map( () => ({ sleep: false, id: t.id }) );
+      table[date] = Array(60).fill({ sleep: false, id: t.id });
     }  
     else if( t.action === 'fall' ) {
       if( timestamps[i+1] && timestamps[i+1].action === 'wakeup' ) {
-        const _t        = timestamps[++i];
+        const _t       = timestamps[++i];
         const [, _min] = get_date_min(_t);
         
-        for(let m = min; m < _min; m++)
+        for(let m = min; m < _min; m++) {
           table[date][m].sleep = true;
+        }
       }
       else {
         throw 'No contiguous wake up.';

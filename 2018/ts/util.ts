@@ -31,7 +31,11 @@ export const inc_key = (json :NumberJSON, key :number) :NumberJSON => {
   return { [_key]: json[_key] ? json[_key]+1 : 1 }
 }
 
-export function obj_max(obj :AnyJSON) :any {
+export function obj_sum(obj :NumberJSON) :number {
+  return Object.values(obj).reduce( (acc, n) => acc+n );
+}
+
+export function obj_max<T>(obj :{ [propName :string] :T }) :T {
   return Object.keys(obj).sort( (a, b) => obj[b] - obj[a] )[0];
 }
 
