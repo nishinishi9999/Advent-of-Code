@@ -2,6 +2,7 @@
 import * as Util    from './util'
 import {NumberJSON} from './util'
 
+
 class Node {
   children :Node[];
   meta     :number[];
