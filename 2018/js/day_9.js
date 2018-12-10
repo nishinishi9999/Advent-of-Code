@@ -73,13 +73,11 @@ function high_score(player_n, last) {
     const list = new List(0, 1);
     list.move(1);
     for (let n = 2, turn = 1; n <= last; n++, turn = (turn + 1) % player_n) {
-        //list.print();
         if (n % 23) {
             list.appendmove(2, n);
         }
         else {
             const val = list.search(-7);
-            //console.log('val', val);
             players[turn] += n + val;
             list.deletemove(-7);
         }
@@ -87,21 +85,7 @@ function high_score(player_n, last) {
     return players.sort((a, b) => b - a)[0];
 }
 function main() {
-    //const input = { player_n: 10, last: 25 };
     const input = { player_n: 419, last: 71052 };
-    // [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0 ]
-    //
-    // [ 0, 1,-1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0 ] Index insert
-    //
-    // [ 0, 1, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0 ] Index removal
-    /*
-    const node = create_list();
-    node.next = new Node(1, node.next, node);
-    node.next.next = new Node(2, node.next.next, node.next);
-    console.log(node);
-     */
-    //remove_pos(table, 2, 10);
-    //console.log(table);
     const first = high_score(input.player_n, input.last);
     const second = high_score(input.player_n, input.last * 100);
     console.log('First:', first);
