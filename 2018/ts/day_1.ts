@@ -10,7 +10,7 @@ interface Repeated {
   past  :NumberJSON
 }
 
-function first_repeated (acc :Repeated, n :number) :Repeated {
+function first_repeated(acc :Repeated, n :number) :Repeated {
   const m = acc.n+n;
   
   if( acc.found )
@@ -44,10 +44,8 @@ function main() :void {
     past  : {}
   };
 
-  const [_first, _second] = [ first(input), second(input, def_acc) ];
-
-  console.log('First:',  _first);
-  console.log('Second:', _second);
+  console.log('First:',  first(input) );
+  console.log('Second:', second(input, def_acc) );
 }
 
 main();

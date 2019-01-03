@@ -9,10 +9,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = __importStar(require("fs"));
 exports.read_file = (path) => fs.readFileSync(path, 'utf8');
-exports.format_as_strings = (file) => file.split('\n')
-    .filter(_ => _);
-exports.format_as_numbers = (file) => exports.format_as_strings(file)
-    .map(n => parseInt(n));
+exports.lines = (file) => file.split('\n').filter(_ => _);
+exports.numbers = (file) => exports.lines(file).map(n => parseInt(n));
+exports.char_arrs = (file) => exports.lines(file).map(_ => _.split(''));
 // JSON manipulation
 exports.inc_key = (json, key) => {
     const _key = key.toString();

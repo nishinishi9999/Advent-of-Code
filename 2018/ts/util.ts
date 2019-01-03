@@ -19,11 +19,9 @@ export interface AnyJSON {
 
 export const read_file = (path :string) :string => fs.readFileSync(path, 'utf8');
 
-export const format_as_strings = (file :string) :string[] => file.split('\n')
-  .filter(_=>_);
-
-export const format_as_numbers = (file :string) :number[] => format_as_strings(file)
-  .map( n => parseInt(n) );
+export const lines     = (file :string) :string[]   => file.split('\n').filter(_=>_);
+export const numbers   = (file :string) :number[]   => lines(file).map( n => parseInt(n) );
+export const char_arrs = (file :string) :string[][] => lines(file).map(_=>_.split(''));
 
 // JSON manipulation
 export const inc_key = (json :NumberJSON, key :number) :NumberJSON => {
