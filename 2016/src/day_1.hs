@@ -1,6 +1,7 @@
 module Day_1 where
 
 import Data.List.Split (splitOn)
+import qualified Data.Set as S
 import System.IO
 
 data Dir a = Left' a | Right' a
@@ -10,49 +11,57 @@ data Cardinal = North | East | South | West
   deriving (Show, Enum, Eq)
 
 format_input :: [Char] -> [Dir Int]
-format_input = (map to_dir) . parts
-  where parts    = splitOn ", "
-        to_int n = read n :: Int
-        to_dir str
-          | head str == 'L' = Left'  $ to_int $ tail str
-          | otherwise       = Right' $ to_int $ tail str
+format_input = map to_dir . parts
+  where to_int n = read n :: Int
+        parts    = splitOn ", "
+        to_dir str = case head str of
+          'L' -> Left'  . to_int . tail $ str
+          'R' -> Right' . to_int . tail $ str
 
-move :: Int -> Int -> Cardinal -> Dir Int -> (Int, Int, Cardinal)
-move h v c dir = (h', v', c')
+move :: (Int, Int) -> Cardinal -> Dir Int -> ((Int, Int), Cardinal)
+move (y, x) c dir = ((y', x'), c')
    where
     (c', n) = case dir of
       Left'  n -> (if c == North then West  else pred c, n)
       Right' n -> (if c == West  then North else succ c, n)
-    h' = if c' == East  then h+n else if c' == West  then h-n else h
-    v' = if c' == South then v+n else if c' == North then v-n else v
+    (y', x') = case c' of
+      North -> (y-n, x)
+      East  -> (y, x+n)
+      South -> (y+n, x)
+      West  -> (y, x-n)
 
-{-
-diff_v past v h acc f
-  | b == 0    = (past, False, h, v')
-  | otherwise = if (elem v' past) then (past, True, h, v') else diff_v (v':past) v' h (acc-1) f
-    where v' = (f v)
+step :: Int -> (S.Set (Int, Int), Bool, (Int, Int), Cardinal) -> (S.Set (Int, Int), Bool, (Int, Int), Cardinal)
+step n (past, has_been, (y, x), c)
+  | has_been  = (past, has_been, (y, x), c)
+  | otherwise = if S.member pos past then (past, True, pos, c) else (S.insert pos past, False, (y, x), c)
+    where pos = case c of
+           North -> (n, x)
+           East  -> (y, n)
+           South -> (n, x)
+           West  -> (y, n)
 
-diff_h past v h acc f
-  | b == 0    = (past, False, h', v)
-  | otherwise = if (elem v' past) then (past, True, h', v) else diff_h (h':past) v h' (acc-1) f
-    where h' = (f h)
--}
+first_twice :: S.Set (Int, Int) -> (Int, Int) -> Cardinal -> [Dir Int] -> Int
+first_twice past (y, x) c [] = 0
+first_twice past (y, x) c (dir:dirs)
+  | has_been  = abs $ twice_y + twice_x
+  | otherwise = first_twice past' (y', x') c' dirs
+  where ((y', x'), c') = move (y, x) c dir
+        (past', has_been, (twice_y, twice_x), _) = foldr step (past, False, (y, x), c') . tail $ case c' of
+          North -> reverse [y'..y]
+          East  -> [x..x']
+          South -> [y..y']
+          West  -> reverse [x'..x]
 
-first_twice :: [String] -> Int -> Int -> Cardinal -> [Dir Int] -> Int
-first_twice past h v c (dir:dirs)
-  | has_been  = abs $ h'' + v''
-  | otherwise = first_twice past' h' v' c' dirs
-
-distance :: Int -> Int -> Cardinal -> [Dir Int] -> Int
-distance h v _ [] = abs $ h + v
-distance h v c (dir:dirs) = distance h' v' c' dirs
-    where (h', v', c') = move h v c dir
+distance :: (Int, Int) -> Cardinal -> [Dir Int] -> Int
+distance (y, x) _ []         = abs $ y + x
+distance (y, x) c (dir:dirs) = distance (y', x') c' dirs
+    where ((y', x'), c') = move (y, x) c dir
 
 main :: IO ()
 main = do
   input <- openFile "../input/day_1.txt" ReadMode >>= hGetContents
-  let dirs   = format_input $ reverse $ (drop 1 $ reverse input)
-  let first  = distance       0 0 North dirs
-  let second = first_twice [] 0 0 North dirs
-  print [first, second]
+  let dirs   = format_input input
+  let first  = distance (0, 0) North dirs
+  let second = first_twice S.empty (0, 0) North dirs
+  print (first, second)
 
