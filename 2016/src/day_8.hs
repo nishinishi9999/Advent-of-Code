@@ -53,8 +53,8 @@ main = do
   let instr = format_input input
   let s     = S.fromList [ S.fromList [ False | _ <- [0..49] ] | _ <- [0..5] ]
   let s'    = exec_instr s instr
-  let first  = sum . toList . fmap (\row -> length $ S.filter id row) $ s'
-  let second = fmap (\row -> fmap (\b -> if b then '*' else ' ') row) s'
+  let first  = sum . toList . fmap (length . S.filter id) $ s'
+  let second = fmap (fmap (\b -> if b then '*' else ' ')) s'
   print first
   mapM_ putStrLn $ fmap toList second
 
