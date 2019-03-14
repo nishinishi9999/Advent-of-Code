@@ -1,4 +1,4 @@
-module Day_8 where
+module Main where
 
 import System.IO
 import Data.List.Split (splitOn)
@@ -12,13 +12,13 @@ data Instruction =
     deriving Show
 
 format_input :: [Char] -> [Instruction]
-format_input input = map to_instruction . map words $ parts
+format_input input = map (to_instruction . words) parts
   where to_int n = read n ::Int
         parts = lines input
         to_instruction part = case head part of
-          "rect"    -> Rect w h
+          "rect" -> Rect w h
             where [w, h] = map to_int . splitOn "x" . last $ part
-          otherwise -> case part!!1 of
+          _      -> case part!!1 of
             "row"    -> Row y n
               where [y, n] = map to_int [ drop 2 (part!!2), last part ]
             "column" -> Col x n
@@ -32,7 +32,7 @@ update_row :: S.Seq (S.Seq Bool) -> Int -> Int -> S.Seq (S.Seq Bool)
 update_row s y n = S.update y row' s
   where row    = S.index s y
         row'   = b S.>< a
-        (a, b) = S.splitAt ((S.length row) - n) row
+        (a, b) = S.splitAt (S.length row - n) row
 
 update_col :: S.Seq (S.Seq Bool) -> Int -> Int -> S.Seq (S.Seq Bool)
 update_col s x n = foldr (\i acc -> S.update i (update_index (S.index acc i) i) acc) s [0..len]

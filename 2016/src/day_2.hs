@@ -1,5 +1,6 @@
-module Day_2 where
+module Main where
 
+import Data.Maybe (isNothing)
 import System.IO
 
 data Dir = DirUp | DirRight | DirDown | DirLeft

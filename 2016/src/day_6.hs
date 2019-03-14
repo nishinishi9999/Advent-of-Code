@@ -1,4 +1,4 @@
-module Day_6 where
+module Main where
 
 import System.IO
 import Data.List (sort, sortBy, group)

@@ -1,13 +1,16 @@
-module Day_9 where
+module Main where
 
 import Data.List.Split (splitOn)
 import System.IO
 import Debug.Trace
 
+type T_Sequence  = Sequence [Char] Int Int
+type T_Sequence' = Sequence    Int Int Int
+
 data Sequence a n times = Charseq a | Marker n times
   deriving Show
 
-format_input' :: [Char] -> [Sequence Int Int Int]
+format_input' :: [Char] -> [T_Sequence']
 format_input' str
   | null . head . head $ parts = seqs
   | otherwise                  = (Charseq . length . head . head $ parts) : seqs
@@ -17,10 +20,10 @@ format_input' str
         to_marker marker = Marker n times
           where [n, times] = map to_int . splitOn "x" $ marker
         to_sequence part = case null . last $ part of
-           True  -> [ to_marker . head $ part ]
+           True  -> [ to_marker . head $ part  ]
            False -> [ to_marker . head $ part, Charseq . length . last $ part ]
 
-format_input :: [Char] -> [Sequence [Char] Int Int]
+format_input :: [Char] -> [T_Sequence]
 format_input str = (Charseq . head . head $ parts) : (concatMap to_sequence . tail $ parts)
   where parts            = map (splitOn ")") . splitOn "(" . concat . words $ str
         to_int n         = read n ::Int
@@ -31,24 +34,26 @@ format_input str = (Charseq . head . head $ parts) : (concatMap to_sequence . ta
            False -> [ to_marker . head $ part, Charseq . last $ part ]
 
 
-
-marker_to_str :: Sequence [Char] Int Int -> [Char]
+marker_to_str :: T_Sequence -> [Char]
 marker_to_str (Marker n times) = "(" ++ (show n) ++ "x" ++ (show times) ++ ")"
 
 -- Second
-decompress' :: [Sequence [Char] Int Int] -> [Char]
-decompress' seqs
-  | length seqs == 1 = from_charseq . head $ seqs
-    where from_charseq (Charseq n) = n
-  | otherwise = case head seqs of
-    Charseq len    -> decompress' len + 
-    Marker n times -> decompress'
-      where next_is_charseq = case seqs!!1 of
-        Charseq len    = True
-        Marker n times = False
+-- 
+-- Is it empty?
+--   0
+--
+-- Is it a string?
+--   string + decompress seqs
+-- Is it a marker?
+--
+--      
+--decompress' :: T_Sequence' -> [Char]
+--decompress' seqs
+--  | 
 
+{-
 -- First
-get_seq_len :: [[Char]] -> Int -> [Sequence [Char] Int Int] -> ([Char], Int)
+get_seq_len :: [[Char]] -> Int -> T_Sequence -> ([Char], Int)
 get_seq_len acc _ [] = (concat . reverse $ acc, length acc)
 get_seq_len acc n (seq:seqs)
   | n <= 0    = (concat . reverse $ acc, length acc)
@@ -58,7 +63,7 @@ get_seq_len acc n (seq:seqs)
           Charseq str    -> str
           Marker n times -> marker_to_str seq
 
-decompress :: [Sequence [Char] Int Int] -> [Char]
+decompress :: T_Sequence -> [Char]
 decompress [] = []
 decompress seqs = case head seqs of
   Charseq str    -> str    ++ (decompress . tail         $ seqs)
@@ -66,6 +71,7 @@ decompress seqs = case head seqs of
       where (seq_str, len) = get_seq_len [] n (tail seqs)
             a = concat . take times . repeat . take n $ seq_str
             b = drop n seq_str
+-}
 
 main :: IO ()
 main = do
@@ -73,8 +79,8 @@ main = do
   let input = "(27x12)(20x12)(13x14)(7x10)(1x12)A"
   let seqs  = format_input input
   let seqs' = format_input' input
-  let first = decompress seqs
-  let second = decompress' [] seqs'
+  --let first = decompress seqs
+  --let second = decompress' [] seqs'
   
   print seqs'
 

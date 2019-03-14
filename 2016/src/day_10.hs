@@ -17,14 +17,14 @@ data Instr n from to low_to high_to =
   | GiveTo  from (Output low_to) (Output high_to)
   deriving Show
 
-parse_input :: [Char] -> [Instr Int Int Int Int Int]
-parse_input = map to_instr . map words . lines
+parse_input :: [Char] -> [T_Instr]
+parse_input = map (to_instr . words) . lines
   where to_int n      = read n ::Int
-        to_instr line = case line!!0 of
+        to_instr line = case head line of
           "value" -> ValueTo (to_int $ line!!1) $ Bot (to_int $ line!!5)
           "bot"   -> GiveTo  (to_int $ line!!1) output_low output_high
-            where output_low  = (if line!!5  == "bot" then Bot else Output) $ to_int $ line!!6
-                  output_high = (if line!!10 == "bot" then Bot else Output) $ to_int $ line!!11
+            where output_low  = (if line!!5  == "bot" then Bot else Output) . to_int $ line!!6
+                  output_high = (if line!!10 == "bot" then Bot else Output) . to_int $ line!!11
 
 bot_sort :: T_Bots -> Int -> T_Bots
 bot_sort bots from = V.update bots $ V.singleton(from, bot)
@@ -49,7 +49,7 @@ exec :: [T_Instr] -> T_Bots -> T_Output -> (T_Bots, T_Output)
 exec []        bots out = (bots, out)
 exec (i:instr) bots out = case i of
   ValueTo n (Bot to)    -> exec instr (bot_push bots to n) out
-  GiveTo from l_to h_to -> case (V.length $ bots V.! from) == 2 of
+  GiveTo from l_to h_to -> case V.length (bots V.! from) == 2 of
     -- Can execute instruction
     True -> exec instr bots'' out''
       where sorted          = bot_sort bots from
@@ -64,8 +64,8 @@ main :: IO ()
 main = do
   input <- openFile "../input/day_10.txt" ReadMode >>= hGetContents
   let instr = parse_input input
-  let bots  = V.fromList [ V.fromList [] | GiveTo _ _ _ <- instr] 
-  let out   = V.fromList [ Nothing | GiveTo _ _ _ <- instr] 
+  let bots  = V.fromList [ V.fromList [] | GiveTo {} <- instr] 
+  let out   = V.fromList [ Nothing       | GiveTo {} <- instr] 
   
   let (bots', out') = exec instr bots out
 

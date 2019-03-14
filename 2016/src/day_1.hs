@@ -1,4 +1,4 @@
-module Day_1 where
+module Main where
 
 import Data.List.Split (splitOn)
 import qualified Data.Set as S

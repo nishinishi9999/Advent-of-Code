@@ -1,4 +1,4 @@
-module Day_3 where
+module Main where
 
 import Data.List.Split (chunksOf)
 import Data.List (sort)
