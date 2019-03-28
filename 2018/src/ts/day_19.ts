@@ -159,7 +159,7 @@ function part2() {
 }
 
 function main() {
-  const code = Util.read_file('./input/day_19.txt');
+  const code = Util.read_file('../../input/day_19.txt');
   const asm  = new ASM(code);
 
   //console.log('First:',  new ASM(code, 0).run());

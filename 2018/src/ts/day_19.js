@@ -134,7 +134,7 @@ function part2() {
     return reg[0];
 }
 function main() {
-    var code = Util.read_file('../../input/day_19.txt');
+    var code = Util.read_file('./input/day_19.txt');
     var asm = new ASM(code);
     //console.log('First:',  new ASM(code, 0).run());
     console.log('Second:', part2());
