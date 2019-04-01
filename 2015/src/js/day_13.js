@@ -1,23 +1,24 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-// day 13
-const fs = require("fs");
-function read_input(path) {
-    return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
-        .map((line) => line.substr(0, line.length - 1).split(' '));
-}
+const Util = __importStar(require("./util"));
 function parse_input(input) {
-    let person = {};
-    for (let i = 0; i < input.length; i++) {
-        if (person[input[i][0]] === undefined) {
-            person[input[i][0]] = {};
-        }
-        let [a, b] = [input[i][0], input[i][input[i].length - 1]];
-        person[a][b] = input[i][2] === 'gain'
-            ? parseInt(input[i][3])
-            : -parseInt(input[i][3]);
-    }
+    const person = {};
+    input.forEach(line => {
+        const parts = line.substr(0, line.length - 1).split(' ');
+        const [a, b] = [parts[0], parts[parts.length - 1]];
+        if (person[parts[0]] === undefined)
+            person[parts[0]] = {};
+        person[a][b] = parts[2] === 'gain'
+            ? parseInt(parts[3])
+            : -parseInt(parts[3]);
+    });
     return person;
 }
 // Destructive behaviour!
@@ -30,25 +31,23 @@ function add_me(person) {
     return person;
 }
 function find_arrangement(person, name, first, happiness, past) {
-    switch (past.length === Object.keys(person).length) {
-        case true: {
-            return happiness + person[name][first] + person[first][name];
-        }
-        default: {
-            return Object.keys(person[name])
-                .filter((_name) => !past.includes(_name))
-                .map((_name) => find_arrangement(person, _name, first, happiness + person[name][_name] + person[_name][name], past.concat(_name)))
-                .sort((a, b) => b - a)[0];
-        }
+    if (past.length === Object.keys(person).length) {
+        return happiness + person[name][first] + person[first][name];
+    }
+    else {
+        return Object.keys(person[name])
+            .filter((_name) => !past.includes(_name))
+            .map((_name) => find_arrangement(person, _name, first, happiness + person[name][_name] + person[_name][name], past.concat(_name)))
+            .sort((a, b) => b - a)[0];
     }
 }
 function main() {
-    let input = read_input('input/day_13.txt');
-    let person = parse_input(input);
     const name = 'Alice';
-    const a = find_arrangement(person, name, name, 0, [name]);
+    const input = Util.read_lines('../../input/day_13.txt');
+    let person = parse_input(input);
+    const first = find_arrangement(person, name, name, 0, [name]);
     person = add_me(person);
-    const b = find_arrangement(person, name, name, 0, [name]);
-    console.log({ first: a, second: b });
+    const second = find_arrangement(person, name, name, 0, [name]);
+    console.log({ first, second });
 }
 main();

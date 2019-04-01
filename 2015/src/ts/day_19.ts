@@ -1,118 +1,47 @@
-// day 19
-import * as fs from 'fs';
+import * as Util from './util'
 
-
-function read_input(path :string) :string[][] {
-    return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
-        .map( (line) => line.split(' => ') );
+interface Rule {
+  from :string;
+  to   :string;
 }
 
-function parse_input(input :string[][]) :[any, string] {
-    let map = {};
-    let target :string;
-    
-    for(const arr of input) {
-        if(arr.length === 1) {
-            target = arr[0];
-        }
-        else {
-            let [from, to] = arr;
-            
-            if(map[from] === undefined) {
-                map[from] = [to];
-            }
-            else {
-                map[from].push(to);
-            }
-        }
+function parse_input(input :string[]) :[Rule[], string] {
+  const rules = input.slice(0, -1).filter(Boolean).map( line => {
+    const parts = line.split(' => ');
+    return { from: parts[0], to: parts[1] };
+  });
+
+  return [rules, input.slice(-1)[0]];
+}
+
+function find_pos(rules :Rule[], molecule :string) :number {
+  const pos :{ [propName :string] :boolean } = {};
+  const parts = molecule.match(/[A-Z][a-z]*/g);
+
+  if(!parts)
+    throw "Couldnt split molecule";
+  else {
+    for(let i = 0; i < parts.length; i++) {
+      const _parts = parts.slice();
+
+      rules.filter( _ => _.from == parts[i] ).forEach( rule => {
+        _parts[i] = rule.to;
+        pos[ _parts.join('') ] = true;
+      });
     }
-    
-    return [map, target];
+
+    return Object.keys(pos).length;
+  }
 }
 
-function form_regex(map) {
-    return RegExp( Object.keys(map).join('|'), 'g' );
-}
+function main() :void {
+  const input = Util.read_lines('../../input/day_19.txt');
+  const [rules, molecule] = parse_input(input);
 
-function replace_i(arr, i, value) {
-    let _arr = arr.slice();
-    
-    _arr[i] = value;
-    
-    return _arr;
-}
+  const first = find_pos(rules, molecule);
 
-function get_posibilities(map, target :string) :number {
-    const regex = form_regex(map);
-    let match = target.match(regex);
-    let past  = {};
-    
-    for(let i = 0; i < match.length; i++) {
-        for(let j = 0; j < map[ match[i] ].length; j++) {
-            const key = replace_i(match, i, map[ match[i] ][j]).join('');
-            
-            past[key] = true;
-        }
-    }
-    
-    return Object.keys(past).length + 1;
+  console.log({ first });
 }
-
-function step_n(map, regex, p_arr :string[], pos :number, i :number, target :string, limit :number) :number {
-    console.log(p_arr, pos, i);
-    // There is a match
-    switch(p_arr.join('') === target) {
-        case true: return i;
-        default: {
-            // Arbitrary limit
-            switch(i === limit) {
-                case true: return -1;
-                default: {
-                    // End of the array
-                    if(pos === p_arr.length) {
-                        i++;
-                        pos = 0;
-                        
-                        console.log(p_arr.join(''));
-                        p_arr = p_arr.join('').match(regex);
-                    }
-                    
-                    for(let j = pos; j < p_arr.length; j++) {
-                        const p = p_arr[j];
-                        console.log(p);
-                        for(let k = 0; k < map[p].length; k++) {
-                            const key = replace_i(p_arr, j, map[p][k]).join('');
-                            
-                            const res = step_n(map, regex, key, pos+1, i, target, limit);
-                            
-                            if(res !== -1) {
-                                return res;
-                            }
-                        }
-                    }
-                    
-                    return -1;
-                }
-            }
-        }
-    }
-}
-
-function main() {
-    let input         = read_input('input/day_19.txt');
-    let [map, target] = parse_input(input);
-    const regex = form_regex(map);
-    
-    //console.log(map);
-    
-    //target = 'HOHOHO';
-    
-    const a = get_posibilities(map, target);
-    const b = step_n(map, regex, ['e'], 0, 0, target, 2);
-    
-    console.log({ first: a, second: b });
-}
-
 
 main();
+

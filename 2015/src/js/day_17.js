@@ -1,26 +1,27 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-// day 17
-const fs = require("fs");
+const Util = __importStar(require("./util"));
 function* bin_gen(len) {
-    let n;
+    const target = 2 ** len;
     let bin = '';
-    let target = 2 ** len;
+    let n;
     for (n = 0; n < target; n++) {
         bin = n.toString(2)
             .padStart(len, '0');
         yield bin;
     }
 }
-function read_input(path) {
-    return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
-        .map((n) => parseInt(n));
-}
 function find_pos(input, target) {
-    let gen = bin_gen(input.length);
+    const gen = bin_gen(input.length);
+    const n = {};
     let pos = 0;
-    let n = {};
     let done = false;
     let bin;
     let total;
@@ -34,32 +35,31 @@ function find_pos(input, target) {
         else {
             total = 0;
             for (let i = 0; i < bin.length; i++) {
-                if (bin[i] === '1') {
+                if (bin[i] === '1')
                     total += input[i];
-                }
-                if (total > target) {
+                if (total > target)
                     break;
-                }
-            }
-            if (total === target) {
-                let len = bin.split('').filter((_n) => _n === '1').length;
-                pos++;
-                if (n[len] === undefined)
-                    n[len] = 1;
-                else
-                    n[len]++;
             }
         }
+        if (total === target) {
+            const len = bin.split('').filter((_n) => _n === '1').length;
+            pos++;
+            if (n[len] === undefined)
+                n[len] = 1;
+            else
+                n[len]++;
+        }
     }
-    const min = n[Object.keys(n).sort((a, b) => parseInt(a) - parseInt(b))[0]];
-    return [pos, min];
+    return [
+        pos,
+        // min
+        n[Object.keys(n).sort((a, b) => parseInt(a) - parseInt(b))[0]]
+    ];
 }
 function main() {
-    let input = read_input('input/day_17.txt');
+    const input = Util.read_numbers('../../input/day_17.txt');
     const target = 150;
-    //let input = [20, 15, 10, 5, 5];
-    //const target = 25;
-    const [a, b] = find_pos(input, target);
-    console.log({ first: a, second: b });
+    const [first, second] = find_pos(input, target);
+    console.log({ first, second });
 }
 main();

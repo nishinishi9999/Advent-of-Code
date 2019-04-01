@@ -1,86 +1,92 @@
-// day 9
-import * as fs from 'fs';
+import * as Util from './util'
 
-
-function read_input(path :string) :string[][] {
-    return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
-        .map( (line) => line.split(' ') );
+interface I_2DNumberJSON {
+  [propName :string] :{
+    [propName :string] :number
+  }
 }
 
-function parse_input(input :string[][]) {
-    let dist = {};
+function parse_input(input :string[]) :I_2DNumberJSON {
+  let dist :I_2DNumberJSON = {};
+  
+  input.forEach( line => {
+    const parts = line.split(' ');
+    const [a, b, _dist] = [ parts[0], parts[2], parts[4] ];
+
+    if(dist[a] === undefined)
+      dist[a] = {};
+    if(dist[b] === undefined)
+      dist[b] = {};
     
-    for(let i = 0; i < input.length; i++) {
-        if(dist[ input[i][0] ] === undefined) dist[ input[i][0] ] = {};
-        if(dist[ input[i][2] ] === undefined) dist[ input[i][2] ] = {};
-        
-        dist[ input[i][0] ][ input[i][2] ] = parseInt(input[i][4]);
-        dist[ input[i][2] ][ input[i][0] ] = parseInt(input[i][4]);
-    }
-    
-    return dist;
+    dist[a][b] = parseInt(_dist);
+    dist[b][a] = parseInt(_dist);
+  });
+  
+  return dist;
 }
 
-function shortest_distance(dist, from :string, n :number, past :string[]) :number {
-    switch(past.length === Object.keys(dist).length) {
-        case true: return n;
-        default: return Object.keys(dist[from]).map( (to) => {
-            switch(past.includes(to)) {
-                case true : return Infinity;
-                default   : return shortest_distance(dist, to, n + dist[from][to], past.concat(to));
-            }
-        })
-        .sort( (a, b) => a - b )[0];
-    }
+function shortest_distance(dist :I_2DNumberJSON, from :string, n :number, past :string[]) :number {
+  switch(past.length === Object.keys(dist).length) {
+    case true : return n;
+    default   : return Object.keys(dist[from]).map( (to) => {
+      switch(past.includes(to)) {
+        case true : return Infinity;
+        default   : return shortest_distance(dist, to, n + dist[from][to], past.concat(to));
+      }
+    })
+    .sort( (a, b) => a - b )[0];
+  }
 }
 
-function longest_distance(dist, from :string, n :number, past :string[]) :number {
-    switch(past.length === Object.keys(dist).length) {
-        case true: return n;
-        default: return Object.keys(dist[from]).map( (to) => {
-            switch(past.includes(to)) {
-                case true : return 0;
-                default   : return longest_distance(dist, to, n + dist[from][to], past.concat(to));
-            }
-        })
-        .sort( (a, b) => b - a )[0];
-    }
+function longest_distance(dist :I_2DNumberJSON, from :string, n :number, past :string[]) :number {
+  switch(past.length === Object.keys(dist).length) {
+    case true: return n;
+    default: return Object.keys(dist[from]).map( (to) => {
+      switch(past.includes(to)) {
+        case true : return 0;
+        default   : return longest_distance(dist, to, n + dist[from][to], past.concat(to));
+      }
+    })
+    .sort( (a, b) => b - a )[0];
+  }
 }
 
-function find_shortest(dist) {
-    let shortest = Infinity;
+function find_shortest(dist :I_2DNumberJSON) :number {
+  let shortest = Infinity;
+  
+  for(const from in dist) {
+    const d = shortest_distance(dist, from, 0, [from]);
     
-    for(const from in dist) {
-        let d = shortest_distance(dist, from, 0, [from]);
-        
-        if(d < shortest) shortest = d;
-    }
-    
-    return shortest;
+    if(d < shortest)
+      shortest = d;
+  }
+  
+  return shortest;
 }
 
-function find_longest(dist) {
-    let longest = 0;
+function find_longest(dist :I_2DNumberJSON) :number {
+  let longest = 0;
+  
+  for(const from in dist) {
+    const d = longest_distance(dist, from, 0, [from]);
     
-    for(const from in dist) {
-        let d = longest_distance(dist, from, 0, [from]);
-        
-        if(d > longest) longest = d;
-    }
-    
-    return longest;
+    if(d > longest)
+      longest = d;
+  }
+  
+  return longest;
 }
 
 function main() :void {
-    let input = read_input('input/day_9.txt');
-    let dist  = parse_input(input);
-    
-    const a = find_shortest(dist);
-    const b = find_longest(dist);
-    
-    console.log({ first: a, second: b });
+  const input = Util.read_lines('../../input/day_9.txt');
+  const dist  = parse_input(input);
+  
+  const first  = find_shortest(dist);
+  const second = find_longest(dist);
+  
+  console.log({ first, second });
 }
 
 
 main();
+

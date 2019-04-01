@@ -1,34 +1,25 @@
-// day 1
-import * as fs from 'fs';
+import * as Util from './util'
 
+const pool :Util.NumberJSON = { '(': 1, ')': -1 };
 
-function read_input(path :string) :string[] {
-    return fs.readFileSync(path, 'utf8')
-        .split('');
+function last_floor(input :string[]) :number {
+  return input.reduce( (acc, c) => acc + pool[c], 0 );
 }
 
-function count_floor(input :string[]) :number {
-    return input.filter( (c) => c == '(' ).length
-        - input.filter( (c) => c == ')' ).length;
-}
-
-function basement(input :string[], n :number, i :number) :number {
-    let map   = { '(': 1, ')': -1 };
-    
-    switch(n < 0) {
-        case true : return i;
-        default   : return basement(input, n + map[ input[i] ], i+1);
-    }
+function basement(input :string[]) :number {
+  return input.reduce( (acc, c, i) => {
+    return acc[0] == -1 ? acc : [acc[0]+pool[c], i+1];
+  }, [0, 0])[1];
 }
 
 function main() :void {
-    let input = read_input('input/day_1.txt');
-    
-    const a = count_floor(input);
-    const b = basement(input, 0, 0);
-    
-    console.log({ first: a, second: b });
+  const input = Util.read_chars('../../input/day_1.txt');
+  
+  const first  = last_floor(input);
+  const second = basement(input);
+  
+  console.log({ first, second });
 }
 
-
 main();
+

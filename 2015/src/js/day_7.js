@@ -1,101 +1,112 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-// day 7
-const fs = require("fs");
-function read_input(path) {
-    return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
-        .map((line) => line.split(' '));
+const Util = __importStar(require("./util"));
+function parse_arg(val) {
+    const _val = parseInt(val);
+    return Number.isInteger(_val)
+        ? { arg_type: 'num', val: _val }
+        : { arg_type: 'sig', val: val };
 }
-function parse_val(value) {
-    return Number.isInteger(parseInt(value))
-        ? parseInt(value)
-        : value;
-}
-function parse_cmd(input) {
-    return input.map((arr) => {
-        switch (arr.length === 3) {
-            case true: return {
-                cmd: 'SET',
-                args: [parse_val(arr[0])],
-                to: arr[2],
-                done: false
+function parse_input(input) {
+    return input.map(line => {
+        const parts = line.split(' ');
+        switch (parts.length) {
+            case 3: return {
+                cmd: "TO",
+                arg1: parse_arg(parts[0]),
+                to: parts[2],
+                arg_n: 1
             };
-            default: {
-                switch (arr.length === 4) {
-                    case true: return {
-                        cmd: arr[0],
-                        args: [parse_val(arr[1])],
-                        to: arr[3],
-                        done: false
-                    };
-                    default: return {
-                        cmd: arr[1],
-                        args: [parse_val(arr[0]), parse_val(arr[2])],
-                        to: arr[4],
-                        done: false
-                    };
-                }
-            }
+            case 4: return {
+                cmd: 'NOT',
+                arg1: parse_arg(parts[1]),
+                to: parts[3],
+                arg_n: 1
+            };
+            case 5: return {
+                cmd: parts[1],
+                arg1: parse_arg(parts[0]),
+                arg2: parse_arg(parts[2]),
+                to: parts[4],
+                arg_n: 2
+            };
+            default: throw Error("Cannot parse command: " + line);
         }
     });
 }
-function get_val(wires, value) {
-    return typeof (value) === 'number'
-        ? value
-        : wires[value];
-}
-function are_wires_ready(args, wires) {
-    for (let i = 0; i < args.length; i++) {
-        if (typeof (args[i]) === 'string' && wires[args[i]] === undefined)
-            return false;
+class Machine {
+    constructor(cmd, signals = {}) {
+        this.MAX_VAL = 65535;
+        this.signals = signals;
+        this.cmd = cmd.slice();
+        this.ptr = 0;
+        this.done = 0;
     }
-    return true;
-    /*
-    return args.every( (arg) =>
-        typeof(arg) === 'number' || wires[arg] !== undefined
-    );
-    */
-}
-function set_wire(wires, to, value) {
-    let _wires = Object.assign({}, wires);
-    _wires[to] = value;
-    return _wires;
-}
-function run_cmd(cmd, wires) {
-    switch (are_wires_ready(cmd.args, wires)) {
-        case true: {
-            switch (cmd.cmd) {
-                case 'SET': return [true, set_wire(wires, cmd.to, get_val(wires, cmd.args[0]))];
-                case 'AND': return [true, set_wire(wires, cmd.to, get_val(wires, cmd.args[0]) & get_val(wires, cmd.args[1]))];
-                case 'OR': return [true, set_wire(wires, cmd.to, get_val(wires, cmd.args[0]) | get_val(wires, cmd.args[1]))];
-                case 'NOT': return [true, set_wire(wires, cmd.to, 65535 - get_val(wires, cmd.args[0]))];
-                case 'LSHIFT': return [true, set_wire(wires, cmd.to, get_val(wires, cmd.args[0]) << get_val(wires, cmd.args[1]))];
-                case 'RSHIFT': return [true, set_wire(wires, cmd.to, get_val(wires, cmd.args[0]) >> get_val(wires, cmd.args[1]))];
-                default: throw Error('Command not valid: ' + cmd.cmd);
+    get_val(arg) {
+        if (arg.arg_type == 'num')
+            return arg.val;
+        else
+            return this.signals[arg.val];
+    }
+    has_val(arg) {
+        return arg.arg_type == 'num' || this.signals[arg.val] !== undefined;
+    }
+    can_run(cmd) {
+        return this.has_val(cmd.arg1) && (cmd.arg_n == 1 || this.has_val(cmd.arg2));
+    }
+    not(n) { return n >= 0 ? this.MAX_VAL - n : this.MAX_VAL + n; }
+    and(n, m) { return n & m; }
+    or(n, m) { return n | m; }
+    lshift(n, m) { return n << m; }
+    rshift(n, m) { return n >> m; }
+    run() {
+        for (; this.cmd.length; this.ptr = (this.ptr + 1) % this.cmd.length) {
+            const cmd = this.cmd[this.ptr];
+            if (this.can_run(cmd)) {
+                const a = this.get_val(cmd.arg1);
+                const b = (cmd.arg_n == 2 ? this.get_val(cmd.arg2) : 0);
+                let val;
+                switch (cmd.cmd) {
+                    case 'TO':
+                        val = a;
+                        break;
+                    case 'NOT':
+                        val = this.not(a);
+                        break;
+                    case 'AND':
+                        val = this.and(a, b);
+                        break;
+                    case 'OR':
+                        val = this.or(a, b);
+                        break;
+                    case 'LSHIFT':
+                        val = this.lshift(a, b);
+                        break;
+                    case 'RSHIFT':
+                        val = this.rshift(a, b);
+                        break;
+                }
+                if (this.signals[cmd.to] === undefined)
+                    this.signals[cmd.to] = val;
+                this.cmd.splice(this.ptr, 1);
+                this.ptr = 0;
             }
         }
-        default: return [false, wires];
+        return this.signals.a;
     }
-}
-function simulate(cmd, wires) {
-    let done_n = 0;
-    let success;
-    for (let i = 0; done_n < cmd.length; i = (i + 1) % cmd.length) {
-        if (cmd[i].done === false) {
-            [success, wires] = run_cmd(cmd[i], wires);
-            if (success) {
-                cmd[i].done = true;
-                done_n++;
-            }
-        }
-    }
-    return wires['a'];
 }
 function main() {
-    let input = read_input('input/day_7.txt');
-    const a = simulate(parse_cmd(input), {});
-    const b = simulate(parse_cmd(input), { b: a });
-    console.log({ first: a, second: b });
+    const input = Util.read_lines('../../input/day_7.txt');
+    const cmd = parse_input(input);
+    const first = new Machine(cmd).run();
+    const second = new Machine(cmd, { b: first }).run();
+    console.log({ first, second });
 }
 main();

@@ -1,55 +1,52 @@
-// day 12
 import * as jsonfile from 'jsonfile';
 
+//type Obj = number | string | Obj[] | { [propName :string] :Obj }
+type Obj = any
 
-function read_input(path :string) {
-    return jsonfile.readFileSync(path);
+function has_red(obj :Obj) {
+  return Object.keys(obj).some( key =>
+    obj[key] === 'red'
+  );
 }
 
-function has_red(object) {
-    return Object.keys(object).some(
-        (key) => object[key] === 'red'
-    );
-}
-
-function traverse_json(object, ignore_red :boolean) {
-    // Number
-    if( typeof(object) === 'number' ) {
-        return object;
+function traverse_json(obj :Obj, ignore_red :boolean) :number {
+  // Number
+  if( typeof(obj) === 'number' ) {
+    return obj;
+  }
+  // String
+  else if( typeof(obj) === 'string' ) {
+    return 0;
+  }
+  // Array
+  else if( obj.length !== undefined ) {
+    return obj.map( (_obj :Obj) =>
+      traverse_json(_obj, ignore_red)
+    )
+    .reduce( (acc :number, n :number) => acc + n, 0 );
+  }
+  // JSON
+  else {
+    if(ignore_red && has_red(obj)) {
+      return 0;
     }
-    // String
-    else if( typeof(object) === 'string' ) {
-        return 0;
-    }
-    // Array
-    else if( object.length !== undefined ) {
-        return object.map( (obj) =>
-            traverse_json(obj, ignore_red)
-        )
-        .reduce( (acc, n) => acc + n, 0 );
-    }
-    // JSON
     else {
-        if(ignore_red && has_red(object)) {
-            return 0;
-        }
-        else {
-            return Object.keys(object).map( (key) =>
-                traverse_json(object[key], ignore_red)
-            )
-            .reduce( (acc, n) => acc + n, 0 );
-        }
+      return Object.keys(obj).map( key =>
+        traverse_json(obj[key], ignore_red)
+      )
+      .reduce( (acc, n) => acc + n, 0 );
     }
+  }
 }
 
 function main() {
-    let input = read_input('input/day_12.json');
+  const input = jsonfile.readFileSync('../../input/day_12.json');
     
-    const a = traverse_json(input, false);
-    const b = traverse_json(input, true);
-    
-    console.log({ first: a, second: b });
+  const first  = traverse_json(input, false);
+  const second = traverse_json(input, true);
+  
+  console.log({ first, second });
 }
 
-
 main();
+

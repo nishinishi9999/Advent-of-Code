@@ -1,15 +1,15 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-// day 18
-const fs = require("fs");
-function read_input(path) {
-    return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
-        .map((line) => line.split(''));
-}
+const Util = __importStar(require("./util"));
 function neighbors_on(map, y, x) {
     const state_on = '#';
-    //console.log([y, x]);
     return [x - 1, x, x + 1].filter((_x) => map[y - 1] !== undefined && map[y - 1][_x] !== undefined && map[y - 1][_x] === state_on).length
         + [x - 1, x + 1].filter((_x) => map[y][_x] !== undefined && map[y][_x] === state_on).length
         + [x - 1, x, x + 1].filter((_x) => map[y + 1] !== undefined && map[y + 1][_x] !== undefined && map[y + 1][_x] === state_on).length;
@@ -35,18 +35,18 @@ function animate(map, mode) {
     return map.map((line, y) => line.map((_, x) => next_state(map, y, x, mode)));
 }
 function simulate(map, round_n, mode) {
-    let _map = map.map((arr) => arr.slice());
     const state_on = '#';
-    for (let i = 0; i < round_n; i++) {
+    let _map = map.map((arr) => arr.slice());
+    for (let i = 0; i < round_n; i++)
         _map = animate(_map, mode);
-    }
     return _map.reduce((acc, arr) => acc + arr.filter((c) => c === state_on).length, 0);
 }
 function main() {
-    let input = read_input('input/day_18.txt');
     const round_n = 100;
-    const a = simulate(input, round_n, false);
-    const b = simulate(input, round_n, true);
-    console.log({ first: a, second: b });
+    const input = Util.read_lines('../../input/day_18.txt')
+        .map(_ => _.split(''));
+    const first = simulate(input, round_n, false);
+    const second = simulate(input, round_n, true);
+    console.log({ first, second });
 }
 main();

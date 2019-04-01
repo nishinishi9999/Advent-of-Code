@@ -1,38 +1,39 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-// day 14
-const fs = require("fs");
-function read_input(path) {
-    return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
-        .map((line) => line.substr(0, line.length - 1).split(' '));
-}
+const Util = __importStar(require("./util"));
 function parse_input(input) {
-    let reindeer = {};
-    for (let i = 0; i < input.length; i++) {
-        reindeer[input[i][0]] = {
-            v: parseInt(input[i][3]),
+    const reindeer = {};
+    input.forEach(line => {
+        const parts = line.substr(0, line.length - 1).split(' ');
+        reindeer[parts[0]] = {
+            v: parseInt(parts[3]),
             pos: 0,
-            fly_t: parseInt(input[i][6]),
-            rest_t: parseInt(input[i][input[i].length - 2]),
-            counter: parseInt(input[i][6]),
+            fly_t: parseInt(parts[6]),
+            rest_t: parseInt(parts[parts.length - 2]),
+            counter: parseInt(parts[6]),
             resting: false,
             points: 0
         };
-    }
+    });
     return reindeer;
 }
 function clone_reindeers(reindeers) {
-    let _reindeers = {};
-    for (const key in reindeers) {
+    const _reindeers = {};
+    for (const key in reindeers)
         _reindeers[key] = Object.assign({}, reindeers[key]);
-    }
     return _reindeers;
 }
 function next_second(reindeers) {
-    let _reindeers = clone_reindeers(reindeers);
+    const _reindeers = clone_reindeers(reindeers);
     for (const name in _reindeers) {
-        let reindeer = _reindeers[name];
+        const reindeer = _reindeers[name];
         reindeer.counter--;
         if (!reindeer.resting) {
             reindeer.pos += reindeer.v;
@@ -51,38 +52,34 @@ function next_second(reindeers) {
     return _reindeers;
 }
 function leading_reindeer(reindeers, sort_by) {
-    let sort = Object.keys(reindeers).sort((a, b) => reindeers[b][sort_by] - reindeers[a][sort_by]);
+    const sort = Object.keys(reindeers).sort((a, b) => reindeers[b][sort_by] - reindeers[a][sort_by]);
     // All reindeers tied with the first (including itself)
-    return sort.filter((name) => reindeers[name][sort_by] === reindeers[sort[0]][sort_by]);
+    return sort.filter(name => reindeers[name][sort_by] === reindeers[sort[0]][sort_by]);
 }
 function increment_points(reindeers) {
-    let _reindeers = clone_reindeers(reindeers);
-    for (const name of leading_reindeer(_reindeers, 'pos')) {
+    const _reindeers = clone_reindeers(reindeers);
+    for (const name of leading_reindeer(_reindeers, 'pos'))
         _reindeers[name].points++;
-    }
     return _reindeers;
 }
 function winning_reindeer(reindeers, round_n) {
     let _reindeers = clone_reindeers(reindeers);
-    for (let i = 0; i < round_n; i++) {
+    for (let i = 0; i < round_n; i++)
         _reindeers = next_second(_reindeers);
-    }
     return _reindeers[leading_reindeer(_reindeers, 'pos')[0]].pos;
 }
 function _winning_reindeer(reindeers, round_n) {
     let _reindeers = clone_reindeers(reindeers);
-    for (let i = 0; i < round_n; i++) {
+    for (let i = 0; i < round_n; i++)
         _reindeers = increment_points(next_second(_reindeers));
-    }
     return _reindeers[leading_reindeer(_reindeers, 'points')[0]].points;
 }
 function main() {
-    let input = read_input('input/day_14.txt');
-    let reindeers = parse_input(input);
+    const input = Util.read_lines('../../input/day_14.txt');
+    const reindeers = parse_input(input);
     const round_n = 2503;
-    //const round_n = 1000;
-    const a = winning_reindeer(reindeers, round_n);
-    const b = _winning_reindeer(reindeers, round_n);
-    console.log({ first: a, second: b });
+    const first = winning_reindeer(reindeers, round_n);
+    const second = _winning_reindeer(reindeers, round_n);
+    console.log({ first, second });
 }
 main();

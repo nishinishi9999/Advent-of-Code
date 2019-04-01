@@ -1,135 +1,133 @@
-// day 7
-import * as fs from 'fs';
+import * as Util from './util'
 
-
-interface Command {
-    cmd  :string;
-    args :(string | number)[];
-    to   :string;
-    done :boolean;
+interface Arg {
+  arg_type :string,
+  val      :(number | string)
 }
 
-interface Wires {
-    [propName :string] :number;
+interface Cmd {
+  cmd   :string,
+  arg1  :Arg,
+  arg2? :Arg,
+  arg_n :number,
+  to    :string
 }
 
+function parse_arg(val :string) :Arg {
+  const _val = parseInt(val);
 
-function read_input(path :string) :string[][] {
-    return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
-        .map( (line) => line.split(' ') );
+  return Number.isInteger(_val)
+    ? { arg_type: 'num', val: _val }
+    : { arg_type: 'sig', val:  val };
 }
 
-function parse_val(value :string) :string | number {
-    return Number.isInteger( parseInt(value) )
-        ? parseInt(value)
-        : value;
-}
+function parse_input(input :string[]) :Cmd[] {
+  return input.map( line => {
+    const parts = line.split(' ');
 
-function parse_cmd(input :string[][]) :Command[] {
-    return input.map( (arr) => {
-        switch(arr.length === 3) {
-            case true: return {
-                cmd  : 'SET',
-                args : [ parse_val(arr[0]) ],
-                to   : arr[2],
-                done : false
-            }
-            default: {
-                switch(arr.length === 4) {
-                    case true: return {
-                        cmd  : arr[0],
-                        args : [ parse_val(arr[1]) ],
-                        to   : arr[3],
-                        done : false
-                    }
-                    default: return {
-                        cmd  : arr[1],
-                        args : [ parse_val(arr[0]), parse_val(arr[2]) ],
-                        to   : arr[4],
-                        done : false
-                    }
-                }
-            }
-        }
-    });
-}
-
-function get_val(wires :Wires, value :string | number) :number {
-    return typeof(value) === 'number'
-        ? value
-        : wires[value];
-}
-
-function are_wires_ready(args, wires :Wires) :boolean {
-    return args.every( (arg) =>
-        typeof(arg) === 'number' || wires[arg] !== undefined
-    );
-}
-
-function set_wire(wires :Wires, to :string, value :number) :Wires {
-    let _wires = Object.assign({}, wires);
-    
-    _wires[to] = value;
-    
-    return _wires;
-}
-
-function run_cmd(cmd :Command, wires :Wires) :[boolean, Wires] {
-    switch( are_wires_ready(cmd.args, wires) ) {
-        case true: {
-            switch(cmd.cmd) {
-                case 'SET' : return [true, set_wire(wires, cmd.to,
-                    get_val(wires, cmd.args[0])
-                )];
-                case 'AND' : return [true, set_wire(wires, cmd.to,
-                    get_val(wires, cmd.args[0]) & get_val(wires, cmd.args[1])
-                )];
-                case 'OR'  : return [true, set_wire(wires, cmd.to,
-                    get_val(wires, cmd.args[0]) | get_val(wires, cmd.args[1])
-                )];
-                case 'NOT' : return [true, set_wire(wires, cmd.to,
-                    65535 - get_val(wires, cmd.args[0])
-                )];
-                case 'LSHIFT' : return [true, set_wire(wires, cmd.to,
-                    get_val(wires, cmd.args[0]) << get_val(wires, cmd.args[1])
-                )];
-                case 'RSHIFT' : return [true, set_wire(wires, cmd.to,
-                    get_val(wires, cmd.args[0]) >> get_val(wires, cmd.args[1])
-                )];
-                default: throw Error('Command not valid: ' + cmd.cmd);
-            }
-        }
-        default: return [false, wires];
+    switch(parts.length) {
+      case 3 : return {
+        cmd  : "TO",
+        arg1 : parse_arg(parts[0]),
+        to   : parts[2],
+        arg_n: 1
+      }
+      case 4 : return {
+        cmd  : 'NOT',
+        arg1 : parse_arg(parts[1]),
+        to   : parts[3],
+        arg_n: 1
+      }
+      case 5 : return {
+        cmd  : parts[1],
+        arg1 : parse_arg(parts[0]),
+        arg2 : parse_arg(parts[2]),
+        to   : parts[4],
+        arg_n: 2
+      }
+      default: throw Error("Cannot parse command: " + line)
     }
+  });
 }
 
-function simulate(cmd :Command[], wires :Wires) :number {
-    let done_n = 0;
-    let success :boolean;
-    
-    for(let i = 0; done_n < cmd.length; i = (i+1) % cmd.length) {
-        if(cmd[i].done === false) {
-            [success, wires] = run_cmd(cmd[i], wires);
-            
-            if(success) {
-                cmd[i].done = true;
-                done_n++;
-            }
+class Machine {
+  MAX_VAL :number;
+
+  cmd     :Cmd[];
+  signals :Util.NumberJSON;
+  ptr     :number;
+  done    :number;
+
+  constructor(cmd :Cmd[], signals :Util.NumberJSON = {}) {
+    this.MAX_VAL = 65535;
+
+    this.signals = signals;
+    this.cmd     = cmd.slice();
+
+    this.ptr     = 0;
+    this.done    = 0;
+  }
+
+  get_val(arg :Arg) :(number | undefined) {
+    if (arg.arg_type == 'num')
+      return <number>arg.val;
+    else
+      return this.signals[arg.val];
+  }
+
+  has_val(arg :Arg) :boolean {
+    return arg.arg_type == 'num' || this.signals[arg.val] !== undefined;
+  }
+
+  can_run(cmd :Cmd) :boolean {
+    return this.has_val(cmd.arg1) && ( cmd.arg_n == 1 || this.has_val(<Arg>cmd.arg2) );
+  }
+
+  not   (n :number)            :number { return n >= 0 ? this.MAX_VAL-n : this.MAX_VAL+n; }
+  and   (n :number, m :number) :number { return n  & m; }
+  or    (n :number, m :number) :number { return n  | m; }
+  lshift(n :number, m :number) :number { return n << m; }
+  rshift(n :number, m :number) :number { return n >> m; }
+
+  run() :number {
+    for(; this.cmd.length; this.ptr = (this.ptr+1) % this.cmd.length) {
+      const cmd = this.cmd[this.ptr];
+
+      if( this.can_run(cmd) ) {
+        const a = <number>this.get_val(cmd.arg1);
+        const b = <number>(cmd.arg_n == 2 ? this.get_val(<Arg>cmd.arg2) : 0);
+        let val;
+
+        switch(cmd.cmd) {
+          case 'TO'     : val = a;                 break;
+          case 'NOT'    : val = this.not(a);       break;
+          case 'AND'    : val = this.and(a, b);    break;
+          case 'OR'     : val = this.or(a, b);     break;
+          case 'LSHIFT' : val = this.lshift(a, b); break;
+          case 'RSHIFT' : val = this.rshift(a, b); break;
         }
+
+        if( this.signals[cmd.to] === undefined )
+          this.signals[cmd.to] = <number>val;
+        
+        this.cmd.splice(this.ptr, 1);
+        this.ptr = 0;
+      }
     }
-    
-    return wires['a'];
+
+    return this.signals.a;
+  }
 }
 
 function main() :void {
-    let input = read_input('input/day_7.txt');
-    
-    const a = simulate(parse_cmd(input), {});
-    const b = simulate(parse_cmd(input), {b: a});
-    
-    console.log({ first: a, second: b });
+  const input = Util.read_lines('../../input/day_7.txt');
+  const cmd   = parse_input(input);
+
+  const first  = new Machine(cmd).run();
+  const second = new Machine(cmd, { b: first }).run();
+
+  console.log({ first, second });
 }
 
-
 main();
+
