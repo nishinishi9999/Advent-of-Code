@@ -39,7 +39,7 @@ function main() :void {
   const input = 29000000;
   
   const first  = first_higher(input);
-  const second = _first_higher(input);
+  const second = 1;//_first_higher(input);
   
   console.log({ first, second });
 }

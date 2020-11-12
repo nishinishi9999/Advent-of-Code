@@ -1,93 +1,74 @@
 import * as Util from './util'
 
-interface Properties {
-  [propName :string] :{
-    [propName :string] :number;
-  };
-}
-
-function parse_input(input :string[]) :Properties {
-  const properties :Properties = {};
+function parse_input(input :string[]) :number[][] {
+  const properties :number[][] = [];
   
   input.forEach( line => {
+    const _properties :number[] = [];
     const parts = line.split(': ');
-
-    properties[ parts[0] ] = {};
     
     for( const prop of parts[1].split(', ') ) {
       const arr = prop.split(' ');
-      properties[ parts[0] ][ arr[0] ] = parseInt( arr[1] );
+      _properties.push( parseInt(arr[1]) );
     }
+
+    properties.push(_properties);
   });
     
   return properties;
 }
 
-function sum_prop(properties :Properties, prop :string, spoons :number[]) :number {
-  const sum = Object.keys(properties).reduce( (acc, name, i) =>
-      acc + (properties[name][prop] * spoons[i])
-  , 0);
-  
-  return sum < 0 ? 0 : sum;
+function sum_prop(properties :number[][], i :number, spoons :number[]) :number {
+  let res = 0;
+
+  for(let j = 0; j < properties.length; j++)
+    res += properties[j][i] * spoons[j];
+
+  return Math.max(0, res);
+}
+
+function sum_props(properties :number[][], spoons :number[]) {
+  let res = 1;
+
+  for(let i = 0; i < properties[0].length-1; i++)
+    res *= sum_prop(properties, i, spoons);
+
+  return res;
 }
 
 function search_highest(
-  properties :Properties,
-  props      :string[],
+  properties :number[][],
   i          :number,
-  spoon_n    :number,
   spoons     :number[],
-  max_spoons :number) :number {
+  max_spoons :number) :number[] {
 
-  if(i === props.length-1) {
-    if (spoon_n === max_spoons)
-      return spoons.reduce( (acc, n, i) =>
-        acc * sum_prop(properties, props[i], spoons)
-      , 1);
+  // 222870, 117936
+  if(i === spoons.length) {
+    if(max_spoons === 0) {
+      const n       = sum_props(properties, spoons);
+      const hasCals = sum_prop(properties, 4, spoons) === 500;
+
+      return [ n, hasCals ? n : 0 ];
+    }
     else
-      return 0;
+      return [0, 0];
   }
   else {
-    let high_n  = 0;
+    let high_n = 0;
+    let high_m = 0;
     
-    for(let j = 0; j + spoon_n <= max_spoons; j++) {
-      let _n = search_highest(properties, props, i+1, spoon_n + j, spoons.concat(j), max_spoons);
+    for(let j = 0; j <= max_spoons; j++) {
+      spoons[i] = j;
+      let [n, m] = search_highest(properties, i+1, spoons, max_spoons - j);
+      spoons[i] = 0;
       
-      if(_n > high_n)
-        high_n = _n;
+      if(n > high_n)
+        high_n = n;
+      if(m > high_m)
+        high_m = m;
     }
     
-    return high_n;
-  }
-}
-
-function _search_highest(
-  properties :Properties,
-  props      :string[],
-  i          :number,
-  spoon_n    :number,
-  spoons     :number[],
-  max_spoons :number) :number {
-
-  if (i === props.length) {
-    if (spoon_n === max_spoons && sum_prop(properties, 'calories', spoons) === 500)
-      return Array(spoons.length-1).fill(0).reduce( (acc, n, i) =>
-        acc * sum_prop(properties, props[i], spoons)
-      , 1);
-    else
-      return 0;
-  }
-  else {
-    let high_n  = 0;
-    
-    for(let j = 0; j + spoon_n <= max_spoons; j++) {
-      let _n = _search_highest(properties, props, i+1, spoon_n + j, spoons.concat(j), max_spoons);
-      
-      if(_n > high_n)
-        high_n = _n;
-    }
-    
-    return high_n;
+    return [high_n, high_m];
   }
 }
 
@@ -95,13 +76,11 @@ function main() :void {
   const input      = Util.read_lines('../../input/day_15.txt');
   const properties = parse_input(input);
   
-  const props       = Object.keys( properties[ Object.keys(properties)[0] ] );
-  const def_i       = 0;
-  const def_spoon_n = 0;
-  const max_spoons  = 100;
-  
-  const first  = search_highest(properties, props, def_i, def_spoon_n, [], max_spoons);
-  const second = _search_highest(properties, props, def_i, def_spoon_n, [], max_spoons);
+  const def_i      = 0;
+  const max_spoons = 100;
+  const spoons     = Array(properties[0].length-1).fill(0);
+
+  const [first, second] = search_highest(properties, def_i, spoons, max_spoons);
   
   console.log({ first, second });
 }
