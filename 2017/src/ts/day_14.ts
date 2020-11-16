@@ -4,7 +4,7 @@
 *
 * URL: http://adventofcode.com/2017/day/14
 **/
-import * as knot from './day_10.js';
+import * as knot from './day_10';
 
 
 function hex_to_bin(hex :string) :string {

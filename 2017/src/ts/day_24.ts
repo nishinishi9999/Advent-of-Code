@@ -62,7 +62,7 @@ function longest_path(input :number[][], parent :number, s :number, len :number,
 }
 
 function main() :void {
-    let input = read_input('input/day_24.txt');
+    let input = read_input('../../input/day_24.txt');
 
     const a = strongest_path(input, 0, 0, []);
     const b = longest_path(input, 0, 0, 0, []);

@@ -5,7 +5,7 @@
 * URL: http://adventofcode.com/2017/day/18
 **/
 import * as fs from 'fs';
-import * as asm from './asm.js';
+import * as asm from './asm';
 
 
 interface Operator {
@@ -47,7 +47,7 @@ function parse_input(input :string[][]) :Operator[] {
 
 function init_reg(init_val? :Register) :Register {
     const A = 'abcdefghijklmnopqrstuvwxyz'.split('');
-    let json = {};
+    let json :Register = {};
     
     for(const l of A) json[l] = 0;
     
@@ -112,7 +112,7 @@ function parallel_opcode(ops :Operator[]) :number {
 }
 
 function main() :void {
-    const input = read_input('input/day_18.txt');
+    const input = read_input('../../input/day_18.txt');
     const ops   = parse_input(input);
     
     const a = asm.opcode(ops, init_reg(), 0, 0);

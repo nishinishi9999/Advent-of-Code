@@ -27,7 +27,7 @@ function find_subgroups(group :string) :string[] {
     
     let groups = [];
     let n      = 0;
-    let start :number;
+    let start  = 0;
     
     for(let i = 0; i < _group.length; i++) {
         if(_group[i] === '{') {
@@ -58,12 +58,12 @@ function count_groups(groups :string[], level :number) :number {
 }
 
 function _count_groups(group :string) :number {
-    return group.match(/<(.*?)>/g)
+    return (<string[]>group.match(/<(.*?)>/g))
         .reduce( (acc, _group) => acc + _group.length-2, 0 );
 }
 
 function main() :void {
-    let input = read_input('input/day_9.txt');
+    let input = read_input('../../input/day_9.txt');
     
     const a = count_groups([ parse_input(input) ], 1);
     const b = _count_groups( _parse_input(input) );

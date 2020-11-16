@@ -119,7 +119,7 @@ function simulate_collision(particle :ParticleJSON[], tick_n :number) :number {
 }
 
 function main() :void {
-    let input     = read_input('input/day_20.txt');
+    let input     = read_input('../../input/day_20.txt');
     let particles = parse_input(input);
 
     const a = simulate(particles);

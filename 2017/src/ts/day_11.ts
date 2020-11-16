@@ -128,7 +128,7 @@ function measure_distance(input :string[]) :number {
 }
 
 function main() :void {
-    const input :string[] = read_input('input/day_11.txt');
+    const input :string[] = read_input('../../input/day_11.txt');
     
     const a = measure_distance(input);
     const b = farthest_distance(input);

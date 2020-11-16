@@ -47,7 +47,7 @@ function _spinlock(spin_n :number, round_n :number, target :number) :number {
 
 // Optimized for cases whre round_n > target
 function _spinlock_higher(spin_n :number, round_n :number, target :number) :number {
-   let target_n :number;
+   let target_n = 0;
    let pos      = 0;
    let target_i = 0;
    
@@ -72,8 +72,8 @@ function _spinlock_higher(spin_n :number, round_n :number, target :number) :numb
 
 // Optimized for 0
 function _spinlock_zero(spin_n :number, round_n :number) :number {
-   let target_n :number;
-   let pos = 0;
+   let target_n = 0;
+   let pos      = 0;
    
    for(let i = 1, len = 1; i <= round_n; i++, len++) {
        pos = spin(pos, spin_n, len);

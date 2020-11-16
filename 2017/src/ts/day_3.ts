@@ -18,7 +18,7 @@ function create_map(size :number) :number[][] {
     return arr;
 }
 
-function rotate(a) {
+function rotate(a :any) {
     const b = mathjs.complex(0, -1);
     
     const re =  a.re*b.re + a.im*b.im;

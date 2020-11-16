@@ -35,7 +35,7 @@ function redistribute(mem :number[]) :number[] {
     return _mem;
 }
 
-function loop_len(mem :number[], past :string[]) :State {
+function loop_len(mem :number[], past :any) :State {
     let _mem = mem.slice();
     
     let key :string;
@@ -54,7 +54,7 @@ function loop_len(mem :number[], past :string[]) :State {
 
     
 function main() :void {
-    let mem = read_input('input/day_6.txt');
+    let mem = read_input('../../input/day_6.txt');
 
     let s1 = loop_len( mem, [mem.join(' ')]);
     const a = s1.n + 1; // To compensate for the last execution

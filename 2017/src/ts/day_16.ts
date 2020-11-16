@@ -18,8 +18,8 @@ function read_input(path :string) :string[] {
         .split(',');
 }
 
-function clone_cmd(cmd) {
-    return cmd.map( (c) => ({ cmd: c.cmd, args: c.args.slice() }) );
+function clone_cmd(cmd :CmdJSON[]) {
+    return cmd.map( (c :CmdJSON) => ({ cmd: c.cmd, args: c.args.slice() }) );
 }
 
 function parse_input(input :string[]) :CmdJSON[] {
@@ -126,7 +126,7 @@ function exec_cmd_list(cmd :CmdJSON[], round_n :number) :string {
 }
 
 function main() :void {
-    const input = read_input('input/day_16.txt');
+    const input = read_input('../../input/day_16.txt');
     const cmd   = parse_input(input);
     
     const a = exec_cmd_list(cmd, 1);

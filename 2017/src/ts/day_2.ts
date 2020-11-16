@@ -9,7 +9,8 @@ import * as fs from 'fs';
 
 function read_input(path :string) :number[][] {
     return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
+        .trim()
+        .split('\n')
         .map( (line) => line.split('\t').map( (n) => parseInt(n) ) );
 }
 
@@ -25,15 +26,15 @@ function first(input :number[][]) :number {
 function second(input :number[][]) :number {
     return input.map( (line) => {
         const n = line.find( (_n) => line.some( (_m) => _n !== _m && _n % _m === 0 ) );
-        const m = line.find( (_m) => n !== _m && n % _m === 0 );
-        
-        return n/m;
-    })
-    .reduce( (acc, n) => acc+n, 0 );
+      const m = line.find( (_m) => <number>n !== _m && <number>n % _m === 0 );
+      
+      return <number>n/<number>m;
+  })
+  .reduce( (acc, n) => acc+n, 0 );
 }
 
 function main() :void {
-    const input :number[][] = read_input('input/day_2.txt');
+    const input :number[][] = read_input('../../input/day_2.txt');
     
     const a :number = first(input);
     const b :number = second(input);

@@ -52,6 +52,8 @@ function follow_stop(map :string[][], y :number, x :number, dir :string) :Positi
         if     (map[y][x-1] === '-') return { y: y, x: x-1, dir: 'left'  };
         else if(map[y][x+1] === '-') return { y: y, x: x+1, dir: 'right' };
     }
+
+    return {y, x, dir}; // To avoid tsc errors
 }
 
 function next_pos(map :string[][], pos :PositionJSON) :PositionJSON {
@@ -95,7 +97,7 @@ function find_path(map :string[][], pos :number) :[string, number] {
 }
 
 function main() :void {
-    let input     = read_input('input/day_19.txt');
+    let input     = read_input('../../input/day_19.txt');
     let start_pos = find_start(input);
     
     const [a, b] = find_path(input, start_pos);

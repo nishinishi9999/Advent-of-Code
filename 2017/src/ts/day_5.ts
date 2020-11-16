@@ -9,7 +9,7 @@ import * as fs from 'fs';
 
 function read_input(path :string) :number[] {
     return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
+        .split('\n')
         .map( (n) => parseInt(n) );
 }
 
@@ -24,7 +24,7 @@ function first(input :number[]) :number {
         _input[i]++;
     }
     
-    return n;
+    return n-1;
 }
 
 function second(input :number[]) :number {
@@ -38,11 +38,11 @@ function second(input :number[]) :number {
         _input[i] += _input[i] >= 3 ? -1 : 1;
     }
     
-    return n;
+    return n-1;
 }
 
 function main() :void {
-    const input :number[] = read_input('input/day_5.txt');
+    const input :number[] = read_input('../../input/day_5.txt');
     
     const a :number = first(input);
     const b :number = second(input);

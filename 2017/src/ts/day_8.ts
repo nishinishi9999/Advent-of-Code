@@ -13,13 +13,14 @@ interface NumberJSON {
 
 function read_input(path :string) :string[][] {
     return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
+        .trim()
+        .split('\n')
         .map( (line) => line.split(' ') );
 }
 
 // Initialize all registers to 0
 function init_reg(input :string[][]) :NumberJSON {
-    let reg = {};
+    let reg :NumberJSON = {};
     let t_r    :string;
     let cond_r :string;
     
@@ -34,7 +35,7 @@ function init_reg(input :string[][]) :NumberJSON {
 }
 
 function set_json(json :NumberJSON, t_key :string, val :number) :NumberJSON {
-    let _json = {};
+    let _json :NumberJSON = {};
     
     for(const key in json) {
         _json[key] = key === t_key ? val : json[key];
@@ -44,7 +45,7 @@ function set_json(json :NumberJSON, t_key :string, val :number) :NumberJSON {
 }
 
 // Reduce a json to it's highest value
-function json_high(json) {
+function json_high(json :NumberJSON) {
     return Object.keys(json)
         .reduce( (acc, key) => Math.max(acc, json[key]), 0 );
 }
@@ -82,8 +83,8 @@ function opcode(reg :NumberJSON, op :string, t_r :string, n :number, cond_r :str
 }
 
 function process(input :string[][]) :number[] {
-    let reg = init_reg(input);
-    let high    :number;
+    let reg     = init_reg(input);
+    let high    = 0;
     let highest = 0;
     
     for(const arr of input) {
@@ -100,8 +101,7 @@ function process(input :string[][]) :number[] {
 }
 
 function main() :void {
-    let input = read_input('input/day_8.txt');
-    
+    const input  = read_input('../../input/day_8.txt');
     const [a, b] = process(input);
     
     console.log({ first: a, second: b });

@@ -15,7 +15,8 @@ interface Node {
 
 function read_input(path :string) :string[] {
     return fs.readFileSync(path, 'utf8')
-        .split('\r\n');
+        .trim()
+        .split('\n');
 }
 
 function parse_input(input :string[]) :Node[] {
@@ -78,15 +79,15 @@ function n_connected_to_zero(nodes :Node[]) :number {
     return n;
 }
 
-function find_group(nodes :Node[], past, i :number) :number[] {
+function find_group(nodes :any, past :any, i :number) :number[] {
     return [].concat(
-        nodes[i].con.map( (j) => {
+        nodes[i].con.map( (j :number) => {
             switch( past.includes(j) ) {
                 case true : return [];
                 default   : return [j].concat( find_group(nodes, past.concat(j), j) );
             }
         })
-        .reduce( (acc, arr) => acc.concat(arr), [] )
+        .reduce( (acc :number[], arr :number[]) => acc.concat(arr), [] )
     );
 }
 
@@ -114,7 +115,7 @@ function group_n(nodes :Node[]) :number {
 }
 
 function main() :void {
-    const input = read_input('input/day_12.txt');
+    const input = read_input('../../input/day_12.txt');
     const nodes = parse_input(input);
     
     const a = n_connected_to_zero(nodes);

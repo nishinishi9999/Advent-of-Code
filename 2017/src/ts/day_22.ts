@@ -22,7 +22,7 @@ interface StateJSON {
 
 function read_input(path :string) :string[][] {
     return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
+        .split('\n')
         .map( (line) => line.split('') );
 }
 
@@ -56,6 +56,7 @@ function parse_input(input :string[][]) :StateJSON {
 
 // Destructive behaviour!
 function set_key(s :StateJSON, key :string, val :string | number | boolean) :StateJSON {
+    // @ts-ignore
     s[key] = val;
     
     return s;
@@ -162,7 +163,7 @@ function infected_n(s :StateJSON, tick_n :number, evolved_mode :boolean) {
 }
 
 function main() {
-    let input = read_input('input/day_22.txt');
+    let input = read_input('../../input/day_22.txt');
     
     const a = infected_n( parse_input(input), 10000,    false );
     const b = infected_n( parse_input(input), 10000000, true  );

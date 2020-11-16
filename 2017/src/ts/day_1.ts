@@ -9,6 +9,7 @@ import * as fs from 'fs';
 
 function read_input(path :string) :number[] {
     return fs.readFileSync(path, 'utf8')
+        .trim()
         .split('')
         .map( (n) => parseInt(n) );
 }
@@ -28,7 +29,7 @@ function halfway_sum(input :number[]) :number {
 }
 
 function main() :void {
-    const input = read_input('input/day_1.txt');
+    const input = read_input('../../input/day_1.txt');
     
     const a = contiguous_sum(input);
     const b = halfway_sum(input);

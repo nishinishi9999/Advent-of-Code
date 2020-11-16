@@ -17,7 +17,8 @@ interface FirewallJSON {
 
 function read_input(path :string) :string[] {
     return fs.readFileSync(path, 'utf8')
-        .split('\r\n');
+        .trim()
+        .split('\n');
 }
 
 function process_input(input :string[]) :FirewallJSON[] {
@@ -84,7 +85,7 @@ function next_ps(fw :FirewallJSON[], i :number) :FirewallJSON[] {
     return _fw;
 }
 
-function severity(fw :FirewallJSON[], return_caught) :number {
+function severity(fw :FirewallJSON[], return_caught :boolean) :number {
     let _fw = clone_fw(fw);
     let s = 0;
     
@@ -122,7 +123,7 @@ function delay(fw :FirewallJSON[]) :number {
 }
 
 function main() {
-    const input :string[]       = read_input('input/day_13.txt');
+    const input :string[]       = read_input('../../input/day_13.txt');
     const fw    :FirewallJSON[] = process_input(input);
     
     const a = severity(fw, false);

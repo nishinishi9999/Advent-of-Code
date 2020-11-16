@@ -21,16 +21,15 @@ interface NodeJSON {
 
 function read_input(path :string) :string[] {
     return fs.readFileSync(path, 'utf8')
-        .split('\r\n');
+        .split('\n');
 }
 
 function parse_input(input :string[]) :TreeJSON {
-    let nodes = {};
+    let nodes :any = {};
     
     for(let i = 0; i < input.length; i++) {
-        let match = input[i].match(/(\w+) \((\d+)\)(?: -> (.+))?/);
+        let match = <string[]>input[i].match(/(\w+) \((\d+)\)(?: -> (.+))?/);
         const name   = match[1];
-        const weight = match[2];
         
         nodes[name] = {
             name       : match[1],
@@ -134,7 +133,8 @@ function find_unbalanced(nodes :TreeJSON, parent :string, ideal :number) :number
 }
 
 function main() :void {
-    let input = read_input('./input/day_7.txt');
+    let input = read_input('../../input/day_7.txt');
+    console.log(parse_input(input));
     let nodes = link_parents( parse_input(input) );
     
     const a = tree_base(nodes);

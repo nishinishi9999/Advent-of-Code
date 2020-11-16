@@ -203,7 +203,7 @@ function cell_n(arr :string[][], rules :RulesJSON, times :number) :number {
 }
 
 function main() :void {
-    let input = read_input('input/day_21.txt');
+    let input = read_input('../../input/day_21.txt');
     let rules = parse_input(input);
     
     let arr = [

@@ -5,12 +5,14 @@
 * URL: http://adventofcode.com/2017/day/23
 **/
 function asm(debug :boolean) :number {
+    // @ts-ignore
     let [a, b, c, d, e, f, g, h] = [debug ? 1 : 0, 0, 0, 0, 0, 0, 0, 0];
     let line = 0;
     let n    = 0;
     
     while(true) {
         switch(line) {
+            // @ts-ignore
             case 0: {
                 b = 93;
                 c = b;
@@ -20,6 +22,7 @@ function asm(debug :boolean) :number {
                     c = b + 17000;
                 }
             }
+            // @ts-ignore
             case 9: {
                 f = 1;
                 d = 2;

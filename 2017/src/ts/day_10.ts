@@ -103,8 +103,10 @@ export function _hash(lengths :number[]) :string {
     return knot_hash(map);
 }
 
-function main() :void {
-    const input = read_input('input/day_10.txt');
+function main(asModule :boolean) :void {
+    if(asModule) return;  
+
+    const input = read_input('../../input/day_10.txt');
     const map   = init_map(256);
     
     const a = hash(map, parse_to_numbers(input), 0, 0).hash;
@@ -114,4 +116,4 @@ function main() :void {
 }
 
 
-//main();
+main(true);
