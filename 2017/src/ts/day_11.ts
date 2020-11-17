@@ -8,6 +8,7 @@ import * as fs from 'fs';
 
 
 interface DirectionJSON {
+    [propName :string] :number;
     n  :number;
     s  :number;
     nw :number;
@@ -19,11 +20,12 @@ interface DirectionJSON {
 
 function read_input(path :string) :string[] {
     return fs.readFileSync(path, 'utf8')
+        .trim()
         .split(',');
 }
 
 function count_dirs(dirs :string[]) :DirectionJSON {
-    let dir_n = {
+    let dir_n :DirectionJSON = {
         n  : 0,
         s  : 0,
         nw : 0,
@@ -43,7 +45,7 @@ function count_dirs(dirs :string[]) :DirectionJSON {
 function attempt_negation(json :DirectionJSON) :DirectionJSON {
     let _json = Object.assign({}, json);
     
-    let negated = {
+    let negated :{ [propName :string] :string } = {
         n  : 's',
         s  : 'n',
         nw : 'se',
@@ -68,7 +70,7 @@ function attempt_negation(json :DirectionJSON) :DirectionJSON {
 function attempt_reduction(json :DirectionJSON) :DirectionJSON {
     let _json = Object.assign({}, json);
     
-    const reduced = {
+    const reduced :{ [propName :string] :string[] } = {
         n  : ['sw', 'se'],
         s  : ['nw', 'ne'],
         nw : ['s',  'ne'],
@@ -102,7 +104,7 @@ function json_sum(json :DirectionJSON) :number {
         .reduce( (acc, n) => acc + <number>_json[n], 0 );
 }
 
-function farthest_distance(input) {
+function farthest_distance(input :string []) :number {
     let dirs = input.slice();
     let dist = 0;
     

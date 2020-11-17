@@ -20,7 +20,7 @@ interface RulesJSON {
 
 function read_input(path :string) :string[][] {
     return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
+        .split('\n')
         .map( (line) => line.split(' => ') );
 }
 
@@ -29,9 +29,11 @@ function parse_input(input :string[][]) :RulesJSON {
     
     for(let i = 0; i < input.length; i++) {
         if(input[i][0].length === 5) {
+            // @ts-ignore
             rules[2].push({ from: input[i][0], to: input[i][1] });
         }
         else {
+            // @ts-ignore
             rules[3].push({ from: input[i][0], to: input[i][1] });
         }
     }
@@ -47,6 +49,7 @@ function from_rule(rule :RuleJSON) :string[][] {
     return rule.to.split('/').map( (line) => line.split('') );
 }
 
+// @ts-ignore
 function rotate(arr :string[][]) :string[][] {
     switch(arr[0].length) {
         case 2: {
@@ -65,6 +68,7 @@ function rotate(arr :string[][]) :string[][] {
     }
 }
 
+// @ts-ignore
 function flip(arr :string[][]) :string[][] {
     switch(arr[0].length) {
         case 2: {
@@ -83,6 +87,7 @@ function flip(arr :string[][]) :string[][] {
     }
 }
 
+// @ts-ignore
 function get_posibilities(arr :string[][]) :string[] {
     let pos = [arr];
     let i :number;
@@ -114,6 +119,7 @@ function get_posibilities(arr :string[][]) :string[] {
 function match_rule(arr :string[][], rules :RulesJSON) {
     let pos = get_posibilities(arr);
     
+    // @ts-ignore
     for(const rule of rules[arr[0].length]) {
         for(const str of pos) {
             if(rule.from === str) {

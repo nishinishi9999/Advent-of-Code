@@ -86,6 +86,7 @@ function _spinlock_zero(spin_n :number, round_n :number) :number {
    return target_n;
 }
 
+// @ts-ignore
 function main() {
     const input = 367;
     

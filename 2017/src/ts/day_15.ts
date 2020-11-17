@@ -57,6 +57,7 @@ function find_pairs(a :GeneratorJSON, b :GeneratorJSON, round_n :number, use_mul
     return n;
 }
 
+// @ts-ignore
 function main() {
     const gen_a = {
         start_val : 883,

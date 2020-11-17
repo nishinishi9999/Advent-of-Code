@@ -21,6 +21,7 @@ interface NodeJSON {
 
 function read_input(path :string) :string[] {
     return fs.readFileSync(path, 'utf8')
+        .trim()
         .split('\n');
 }
 

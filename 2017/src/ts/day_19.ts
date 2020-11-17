@@ -16,7 +16,7 @@ interface PositionJSON {
 
 function read_input(path :string) :string[][] {
     return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
+        .split('\n')
         .map( (line) => line.split('') );
 }
 
@@ -79,12 +79,17 @@ function is_end(map :string[][], pos :PositionJSON) :boolean {
 function find_path(map :string[][], pos :number) :[string, number] {
     let A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
     
+    // @ts-ignore
     let _pos = Object.assign({}, pos);
+    // @ts-ignore
     let path = map[_pos.y][_pos.x];
     
+    // @ts-ignore
     while( !is_end(map, _pos) ) {
+        // @ts-ignore
         _pos = next_pos(map, _pos);
         
+        // @ts-ignore
         path += map[_pos.y][_pos.x];
     }
     
@@ -100,6 +105,7 @@ function main() :void {
     let input     = read_input('../../input/day_19.txt');
     let start_pos = find_start(input);
     
+    // @ts-ignore
     const [a, b] = find_path(input, start_pos);
     
     console.log({ first: a, second: b });

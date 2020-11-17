@@ -23,7 +23,8 @@ interface ParticleJSON {
 
 function read_input(path :string) :string[][] {
     return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
+        .trim() 
+        .split('\n')
         .map( (line) => line.split(', ') );
 }
 
@@ -34,8 +35,11 @@ function parse_input(input :string[][]) :ParticleJSON[] {
         let a   = arr[2].match(/<(.+?),(.+?),(.+?)>/);
         
         return {
+            // @ts-ignore
             pos: { x: parseInt(pos[1]), y: parseInt(pos[2]), z: parseInt(pos[3]) },
+            // @ts-ignore
             v:   { x: parseInt(v[1]),   y: parseInt(v[2]),   z: parseInt(v[3])   },
+            // @ts-ignore
             a:   { x: parseInt(a[1]),   y: parseInt(a[2]),   z: parseInt(a[3])   },
             collided: false
         };
@@ -57,7 +61,7 @@ function average_a(particle :ParticleJSON) {
 
 function simulate(particle :ParticleJSON[]) :number {
     let min_a = Infinity;
-    let min_i :number;
+    let min_i = 0;
     
     for(let i = 0; i < particle.length; i++) {
         const a = average_a( particle[i] );
@@ -75,7 +79,9 @@ function next_tick(p :ParticleJSON) :ParticleJSON {
     let _p = clone_particle(p);
     
     ['x', 'y', 'z'].forEach( (axis) => {
+         // @ts-ignore
         _p.v[axis]   = _p.v[axis]   + _p.a[axis];
+         // @ts-ignore
         _p.pos[axis] = _p.pos[axis] + _p.v[axis];
     });
     
@@ -100,13 +106,16 @@ function simulate_collision(particle :ParticleJSON[], tick_n :number) :number {
                     + ',' + particle[j].pos.y
                     + ',' + particle[j].pos.z;
                 
+                // @ts-ignore
                 pos[key] = pos[key] === undefined ? [j] : pos[key].concat(j);
             }
         }
         
         // Delete repeated positions
         for(const _key in pos) {
+            // @ts-ignore
             if(pos[_key].length > 1) {
+                // @ts-ignore
                 pos[_key].forEach( (n) => {
                     particle[n].collided = true;
                 });

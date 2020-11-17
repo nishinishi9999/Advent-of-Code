@@ -9,7 +9,7 @@ import * as fs from 'fs';
 
 function read_input(path :string) :number[][] {
     return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
+        .split('\n')
         .map( (line) => line.split('/')
             .map( (n) => parseInt(n) )
         );
@@ -25,6 +25,7 @@ function has_parent(input :number[][], parent :number, past :string[]) {
     return false;
 }
 
+// @ts-ignore
 function strongest_path(input :number[][], parent :number, s :number, past :string[]) {
     switch( has_parent(input, parent, past) ) {
         case false: return s;
@@ -42,7 +43,9 @@ function strongest_path(input :number[][], parent :number, s :number, past :stri
 
 function sort_by_length(arr_a :string[], arr_b :string[]) :number {
     return arr_b[1] === arr_a[1]
+        // @ts-ignore
         ? arr_b[0] - arr_a[0]
+        // @ts-ignore
         : arr_b[1] - arr_a[1];
 }
 
@@ -56,6 +59,7 @@ function longest_path(input :number[][], parent :number, s :number, len :number,
                     
                     return longest_path( input, pair, s + parent + pair, len+1, past.concat( arr.join() ) );
                 })
+                // @ts-ignore
                 .sort(sort_by_length)[0];
         }
     }

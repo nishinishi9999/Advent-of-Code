@@ -62,6 +62,7 @@ function asm(debug :boolean) :number {
     return debug ? h : n;
 }
 
+// @ts-ignore
 function main() :void {
     const a = asm(false);
     const b = asm(true);

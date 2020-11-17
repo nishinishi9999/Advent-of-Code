@@ -116,4 +116,5 @@ function main(asModule :boolean) :void {
 }
 
 
-main(true);
+main(false);
+

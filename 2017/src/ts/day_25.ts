@@ -39,6 +39,7 @@ function turing(state :string, steps :number, states :StatesJSON) {
     return checksum(tape);
 }
 
+// @ts-ignore
 function main() {
     const state = 'A';
     const steps = 12586542;

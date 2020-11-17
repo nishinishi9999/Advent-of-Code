@@ -20,7 +20,7 @@ interface Register {
 
 function read_input(path :string) :string[][] {
     return fs.readFileSync(path, 'utf8')
-        .split('\r\n')
+        .split('\n')
         .map( (line) => line.split(' ') );
 }
 
